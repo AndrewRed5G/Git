@@ -88,8 +88,6 @@
 
                 $ultimo_id = $db->insert_id;
 
-                echo "ID cliente: " . $ultimo_id;
-
                 foreach ($comida as $comidas) {
 
                     try {
@@ -110,8 +108,6 @@
 
                     }
                 }
-                
-                echo "idcomida: " . $idcomida;
 
                 $query = "SELECT SUM(comida.valor) as total_comida
                 FROM orden
@@ -145,6 +141,62 @@
         $db->close();
     }
     
+    static function updateEstado($json)
+    {
+        $data = json_decode($json, true);
+    
+        $db = new Conexion();
+
+        try {
+
+            $estado = $data['estado'];
+            $idpedido = $data['idpedido'];
+
+            switch ($estado) {
+
+                case "1":
+
+                    $query = "UPDATE pedido SET estado = 'PREPARACION', fecha = NOW() WHERE idpedido = '$idpedido'";
+
+                    $db->query($query);
+
+                    return self::response(200, 'Estado actualizado', []);
+
+                break;
+
+                case "2":
+
+                    $query = "UPDATE pedido SET estado = 'REPARTO', fecha = NOW() WHERE idpedido = '$idpedido'";
+
+                    $db->query($query);
+
+                    return self::response(200, 'Estado actualizado', []);
+
+                break;
+
+                case "3":
+                    
+                    $query = "UPDATE pedido SET estado = 'ENTREGADO', fecha = NOW() WHERE idpedido = '$idpedido'";
+
+                    $db->query($query);
+
+                    return self::response(200, 'Estado actualizado', []);
+
+                break;
+
+                default:
+
+                    return self::response(500, 'error', []);
+
+                break;
+            }
+        } catch (PDOException $e) {
+
+            return self::response(500, $e->getMessage(), []);
+
+        } 
+    }
+
  } 
 
 
