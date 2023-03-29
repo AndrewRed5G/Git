@@ -9,15 +9,7 @@
 
         $data = json_decode(file_get_contents('php://input'), true);
 
-        if (!isset($data['idcomida']) || !isset($data['nombre']) || !isset($data['valor'])) {
-
-        echo json_encode(array('statusCode' => 400, 'message' => 'Faltan datos obligatorios'));
-
-        exit();
-
-        }
-
-        $response = controlador::registroComida(json_encode($data));
+        $response = controlador::registroOrden(json_encode($data));
 
         $response_arr = json_decode($response, true);
         
