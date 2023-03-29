@@ -77,6 +77,7 @@
             $direccion = $data['direccion'];
             $telefono = $data['telefono'];
             $comida = $data['comida'];
+            $valorfinal = 0;
     
             $columnas = "nombre, ciudad, direccion, telefono";
             $valores = "'$nombre', '$ciudad', '$direccion', '$telefono'";
@@ -102,19 +103,37 @@
                     $query = "INSERT INTO orden ($columnas) VALUES ($valores)";
 
                     $db->query($query);
-                    
+
                     } catch (Exception $e) {
 
                         return self::response(500, $e->getMessage(), []);
 
                     }
                 }
+                
+                echo "idcomida: " . $idcomida;
 
-                return self::response(200, 'orden guardada', []);
+                $query = "SELECT SUM(comida.valor) as total_comida
+                FROM orden
+                JOIN comida ON orden.idcomida = comida.idcomida
+                WHERE orden.usuorden = '$usuorden';";
+
+                $valorfinal = $db->query($query);
+
+                $valorfinal = $valorfinal->fetch_assoc();
+
+                $columnas = "estado, idorden, valor";
+                $valores = "'ESPERA', '$usuorden', '$valorfinal[total_comida]'";
+
+                $query = "INSERT INTO pedido ($columnas) VALUES ($valores)";
+
+                $db->query($query);
+
+                return self::response(200, 'Ok todo', []); 
 
             } else {
 
-                return self::response(500, "Error al insertar el registro: " . $db->error, []);
+                return self::response(500, "Error al insertar el registro: ", []);
 
             }
         } catch (Exception $e) {
